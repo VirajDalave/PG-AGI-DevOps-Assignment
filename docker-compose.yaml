@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  backend:
+    image: pgagi-backend-image
+    container_name: backend
+    ports:
+      - "8000:8000"
+    networks:
+      - pgagi-network
+
+  frontend:
+    image: pgagi-frontend-image  # Use the existing image
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - pgagi-network
+    environment:
+      - NEXT_PUBLIC_API_URL=http://13.234.30.26:8000
+    depends_on:
+      - backend
+
+networks:
+  pgagi-network:
+    driver: bridge
