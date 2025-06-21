@@ -32,7 +32,6 @@ jobs:
         
       - name: Run backend tests
         run: |
-          source venv/bin/activate
           pytest
 
   push:
