@@ -1,0 +1,75 @@
+name: CI-pipeline
+
+on:
+  push:
+    branches:
+      - develop
+      
+env: 
+  AWS_REGION: ap-south-1
+  ECR_BACKEND_REPO: pgagi-backend 
+  ECR_FRONTEND_REPO: pgagi-frontend
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup-python
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.10'
+
+      - name: Install backend dependancies
+        working-directory: ./backend
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+        
+      - name: Run backend tests
+        run: |
+          source venv/bin/activate
+          pytest
+
+  push:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      
+      - name: Build & Push backend Docker image
+        run: |
+          BACKEND_TAG=${{ github.sha }}
+          docker build -t $ECR_BACKEND_REPO:$BACKEND_TAG ./backend
+          docker tag $ECR_REPO_BACKEND:$BACKEND_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_BACKEND:$BACKEND_TAG
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_BACKEND:$BACKEND_TAG
+
+      - name: Build & Push frontend Docker image
+        run: |
+          FRONTEND_TAG=${{ github.sha }}
+          docker build -t $ECR_FRONTEND_REPO:$FRONTEND_TAG ./frontend
+          docker tag $ECR_REPO_FRONTEND:$FRONTEND_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_FRONTEND:$FRONTEND_TAG
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_FRONTEND:$FRONTEND_TAG
+
+
+    
