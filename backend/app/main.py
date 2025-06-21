@@ -24,3 +24,5 @@ async def health_check():
 @app.get("/api/message")
 async def get_message():
     return {"message": "You've successfully integrated the backend!"}
+
+
