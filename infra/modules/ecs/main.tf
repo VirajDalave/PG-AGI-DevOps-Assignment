@@ -98,9 +98,9 @@ resource "aws_launch_template" "ecs" {
 #Auto Scaling Group
 resource "aws_autoscaling_group" "ecs_instances" {
   name = "ecs-asg"
-  min_size = 4
-  max_size = 4
-  desired_capacity = 4
+  min_size = 2
+  max_size = 2
+  desired_capacity = 2
   vpc_zone_identifier = var.private_subnets
   health_check_type         = "EC2"
   health_check_grace_period = 300
@@ -250,7 +250,7 @@ resource "aws_ecs_service" "backend" {
   cluster = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.backend.arn
   launch_type = "EC2"
-  desired_count = 1
+  desired_count = 2
   load_balancer {
     target_group_arn = aws_lb_target_group.backend.arn
     container_name = "backend"
@@ -264,7 +264,7 @@ resource "aws_ecs_service" "frontend" {
   cluster = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.frontend.arn
   launch_type = "EC2"
-  desired_count = 1
+  desired_count = 2
   load_balancer {
     target_group_arn = aws_lb_target_group.frontend.arn
     container_name = "frontend"
