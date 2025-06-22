@@ -32,6 +32,14 @@ jobs:
             working-directory: infra
             run: terraform init
 
+          - name: read image tag from ssm
+            id: get_sha
+            run: |
+              TAG=$(aws secretsmanager get-secret-value \
+                --secret-id pgagi-image-tag \
+                --query 'SecretString' --output text | jq -r .tag)
+              echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
+
           - name: terraform apply
             working-directory: infra
-            run: terraform apply -var="image_tag=${{ github.sha}}" -auto-approve
+            run: terraform apply -var="image_tag=${{ env.IMAGE_TAG}}" -auto-approve
