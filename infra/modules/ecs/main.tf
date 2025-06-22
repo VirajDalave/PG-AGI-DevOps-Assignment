@@ -98,9 +98,9 @@ resource "aws_launch_template" "ecs" {
 #Auto Scaling Group
 resource "aws_autoscaling_group" "ecs_instances" {
   name = "ecs-asg"
-  min_size = 1
-  max_size = 4
-  desired_capacity = 2
+  min_size = 2
+  max_size = 8
+  desired_capacity = 4
   vpc_zone_identifier = var.private_subnets
   health_check_type         = "EC2"
   health_check_grace_period = 300
