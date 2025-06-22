@@ -1,0 +1,37 @@
+name: CD-pipeline
+
+on:
+  push:
+    branches:
+      - main 
+
+env:
+    AWS_REGION: "ap-south-1"
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4
+
+          - name: Set up terraform
+            uses: hashicorp/setup-terraform@v3
+            with:
+                terraform_version: 1.9.8
+
+          - name: Configure AWS Credentials
+            uses: aws-actions/configure-aws-credentials@v3
+            with:
+              aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+              aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              aws-region: ${{ env.AWS_REGION }}
+
+          - name: Terraform init
+            working-directory: infra
+            run: terraform init
+
+          - name: terraform apply
+            working-directory: infra
+            run: $ terraform.exe apply -var="image_tag=${{ github.sha}}" -auto-approve
