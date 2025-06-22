@@ -34,4 +34,4 @@ jobs:
 
           - name: terraform apply
             working-directory: infra
-            run: $ terraform.exe apply -var="image_tag=${{ github.sha}}" -auto-approve
+            run: terraform apply -var="image_tag=${{ github.sha}}" -auto-approve

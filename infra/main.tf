@@ -2,10 +2,17 @@ terraform {
   required_providers {
     aws = { source = "hashicorp/aws", version = "5.17.0" }
   }
+
+  backend "s3" {
+    bucket         = "pgagi-terraform-state"
+    key            = "terraform.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "pgagi-terraform-locks"  
+    encrypt        = true
+  }
 }
 
 provider "aws" {
-  profile = "default"
   region  = "ap-south-1"
 }
 
