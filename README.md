@@ -1,3 +1,5 @@
+Video link: "https://drive.google.com/file/d/1otPljcy83ki44KjLJG2ZPCilDGQv5wxc/view?usp=drive_link"
+
 # DevOps Assignment
 
 This project consists of a FastAPI backend and a Next.js frontend that communicates with the backend.
